@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-grid.min.css">
+    <link rel="stylesheet" href="css/bootstrap-reboot.min.css">
+    <style>
+        img {
+            height: auto;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-12">
+            <h2>
+                Springboot + ES - 演示博客
+            </h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 20px;" id="app">
+        <div class="col-9">
+
+            <h4 id="title">{{title}}</h4>
+            <span>作者：{{author}} | 发布时间：{{createTime}}</span>
+
+            <div v-html="content" style="width: 100%;height: auto;">
+
+            </div>
+        </div>
+        <div class="col-3">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Springboot</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">ES</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">杂谈</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">笔记</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script src="./js/vue.js"></script>
+<script src="./js/axios.min.js"></script>
+<script src="./js/marked.js"></script>
+<script>
+
+	function getQueryVariable(param) {
+		var query = window.location.search.substring(1);
+		console.log("获到query:"+query);
+		var argList = query.split("&");
+		console.log("获到argList:"+argList);
+		for (let i=0;i<argList.length;i++) {
+			console.log("获到args:"+argList[i]);
+			let args = argList[i].split("=");
+			if(args[0]==param){
+				console.log("arg相等");
+				return args[1];
+			}else{
+				return ;
+			}
+			
+		}
+	}
+
+	var app=new Vue({
+		el:"#app",
+		data:{
+			title:'',
+			author:'',
+			content: '',
+			createTime: ''
+		},
+		methods:{
+			blog: function(){
+				var id = getQueryVariable("id");
+				console.log("获到id:"+id);
+				var url = 'http://localhost/blog/'+id;
+				axios.get(url).then( (result) => {
+					this.title = result.data.title;
+					this.author = result.data.author;
+					this.content = marked(result.data.content);
+					this.createTime = result.data.createTime;
+				});
+				
+			}
+		},
+		created:function(){
+			this.blog();
+		}
+		
+		
+	});
+
+</script>
+</body>
+</html>
